@@ -25,7 +25,3 @@ This is a Library Management System project that I'm working on using PostgreSQL
 7. Finally, run the **librarian.py** file to start the application:
    ````
    python librarian.py
-
-
-
-
