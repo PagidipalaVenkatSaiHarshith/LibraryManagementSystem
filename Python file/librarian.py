@@ -398,5 +398,3 @@ class MainApplication(tk.Tk):
 if __name__ == '__main__':
     app = MainApplication()
     app.mainloop()
-    cur.close()
-    conn.close()
