@@ -402,19 +402,14 @@ class UpdateRemove(tk.Frame):
             copies_entry.pack()
             copies_entry.insert(0, frequency)
 
-        cur.execute("""SELECT id 
-                        FROM liblocation;
-                                    """)
 
-        all_location = cur.fetchall()
-        print(all_location)
 
 
 class MainApplication(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.title('My Application')
+        self.title('Library Management System')
 
         container = tk.Frame(self)
         container.pack(side='top', fill='both', expand=True)
