@@ -285,6 +285,8 @@ class UpdateRemove(tk.Frame):
         self.Title_Button = tk.Button(self, text='fill info for title', command=self.get_info)
         self.Title_Button.pack()
 
+        self.fields = {}
+
     def get_info(self):
         self.Title_Button.destroy()
 
@@ -306,18 +308,18 @@ class UpdateRemove(tk.Frame):
         result = cur.fetchall()
         print(result)
 
-        cur.execute(""""SELECT * 
+        cur.execute("""SELECT * 
                 FROM author
                 WHERE id = %s;
-        """, (result[2],))
+        """, (result[0][2],))
 
         auth_result = cur.fetchall()
         print(auth_result)
 
-        cur.execute(""""SELECT * 
+        cur.execute("""SELECT * 
                         FROM publisher
                         WHERE id = %s;
-                """, (result[3],))
+                """, (result[0][3],))
 
         pub_result = cur.fetchall()
         print(pub_result)
@@ -326,49 +328,86 @@ class UpdateRemove(tk.Frame):
         Author.pack()
         Author_entry = tk.Entry(self.new_fields_frame, width=50)
         Author_entry.pack()
-        Author_entry.insert(0, )
+        Author_entry.insert(0, auth_result[0][1])
 
         AuthorInfo = tk.Label(self.new_fields_frame, text='Author Info')
         AuthorInfo.pack()
         AuthorInfo_entry = tk.Entry(self.new_fields_frame, width=50)
         AuthorInfo_entry.pack()
-        AuthorInfo_entry.insert(0, "9735644644")
+        AuthorInfo_entry.insert(0, auth_result[0][2])
 
         Publisher = tk.Label(self.new_fields_frame, text='Publisher Name')
         Publisher.pack()
         Publisher_entry = tk.Entry(self.new_fields_frame, width=50)
         Publisher_entry.pack()
-        Publisher_entry.insert(0, "Marimax books")
+        Publisher_entry.insert(0, pub_result[0][1])
 
         PublisherInfo = tk.Label(self.new_fields_frame, text='Publisher Info')
         PublisherInfo.pack()
         PublisherInfo_entry = tk.Entry(self.new_fields_frame, width=50)
         PublisherInfo_entry.pack()
-        PublisherInfo_entry.insert(0, "9735655655")
+        PublisherInfo_entry.insert(0, pub_result[0][2])
 
         PublisherDate = tk.Label(self.new_fields_frame, text='Publication date (YYYY-MM-DD)')
         PublisherDate.pack()
         PublisherDate_entry = tk.Entry(self.new_fields_frame, width=50)
         PublisherDate_entry.pack()
-        PublisherDate_entry.insert(0, "2005-07-02")
+        PublisherDate_entry.insert(0, result[0][4])
 
         isbn = tk.Label(self.new_fields_frame, text='isbn')
         isbn.pack()
         isbn_entry = tk.Entry(self.new_fields_frame, width=50)
         isbn_entry.pack()
-        isbn_entry.insert(0, "9780786856299")
+        isbn_entry.insert(0, result[0][5])
 
-        location = tk.Label(self.new_fields_frame, text='location name')
-        location.pack()
-        location_entry = tk.Entry(self.new_fields_frame, width=50)
-        location_entry.pack()
-        location_entry.insert(0, "golden arch")
+        cur.execute("""SELECT * 
+                        FROM copytable
+                        WHERE book_id = %s;
+                """, (result[0][0],))
 
-        copies = tk.Label(self.new_fields_frame, text='number of copies')
-        copies.pack()
-        copies_entry = tk.Entry(self.new_fields_frame, width=50)
-        copies_entry.pack()
-        copies_entry.insert(0, "2")
+        copy_result = cur.fetchall()
+        print(copy_result)
+
+        cur.execute("""SELECT id 
+                               FROM liblocation;
+                                           """)
+        all_location = cur.fetchall()
+
+        book_id = copy_result[0][0]
+        count = {(book_id, loc_id[0]): 0 for loc_id in all_location}
+        print(count)
+        for a, b, c in copy_result:
+            pair = (a, b)
+            if pair in count:
+                count[pair] += 1
+
+        for pair, frequency in count.items():
+            cur.execute("""SELECT name 
+                            FROM liblocation
+                            WHERE id = %s;
+                            """, (pair[1],))
+
+            location_result = cur.fetchone()[0]
+            print(location_result)
+
+            location = tk.Label(self.new_fields_frame, text='location name')
+            location.pack()
+            location_entry = tk.Entry(self.new_fields_frame, width=50)
+            location_entry.pack()
+            location_entry.insert(0, location_result)
+
+            copies = tk.Label(self.new_fields_frame, text='number of copies')
+            copies.pack()
+            copies_entry = tk.Entry(self.new_fields_frame, width=50)
+            copies_entry.pack()
+            copies_entry.insert(0, frequency)
+
+        cur.execute("""SELECT id 
+                        FROM liblocation;
+                                    """)
+
+        all_location = cur.fetchall()
+        print(all_location)
 
 
 class MainApplication(tk.Tk):
