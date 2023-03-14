@@ -285,6 +285,22 @@ class UpdateRemove(tk.Frame):
         self.Title_Button = tk.Button(self, text='fill info for title', command=self.get_info)
         self.Title_Button.pack()
 
+        self.Author = tk.Label(self.new_fields_frame, text='Author Name')
+        self.Author_entry = tk.Entry(self.new_fields_frame, width=50)
+        self.AuthorInfo = tk.Label(self.new_fields_frame, text='Author Info')
+        self.AuthorInfo_entry = tk.Entry(self.new_fields_frame, width=50)
+
+        self.Publisher = tk.Label(self.new_fields_frame, text='Publisher Name')
+        self.Publisher_entry = tk.Entry(self.new_fields_frame, width=50)
+        self.PublisherInfo = tk.Label(self.new_fields_frame, text='Publisher Info')
+        self.PublisherInfo_entry = tk.Entry(self.new_fields_frame, width=50)
+
+        self.PublisherDate = tk.Label(self.new_fields_frame, text='Publication date (YYYY-MM-DD)')
+        self.PublisherDate_entry = tk.Entry(self.new_fields_frame, width=50)
+
+        self.isbn = tk.Label(self.new_fields_frame, text='isbn')
+        self.isbn_entry = tk.Entry(self.new_fields_frame, width=50)
+
         self.fields = {}
 
     def get_info(self):
@@ -324,41 +340,27 @@ class UpdateRemove(tk.Frame):
         pub_result = cur.fetchall()
         print(pub_result)
 
-        Author = tk.Label(self.new_fields_frame, text='Author Name')
-        Author.pack()
-        Author_entry = tk.Entry(self.new_fields_frame, width=50)
-        Author_entry.pack()
-        Author_entry.insert(0, auth_result[0][1])
+        self.Author.pack()
+        self.Author_entry.pack()
+        self.Author_entry.insert(0, auth_result[0][1])
+        self.AuthorInfo.pack()
+        self.AuthorInfo_entry.pack()
+        self.AuthorInfo_entry.insert(0, auth_result[0][2])
 
-        AuthorInfo = tk.Label(self.new_fields_frame, text='Author Info')
-        AuthorInfo.pack()
-        AuthorInfo_entry = tk.Entry(self.new_fields_frame, width=50)
-        AuthorInfo_entry.pack()
-        AuthorInfo_entry.insert(0, auth_result[0][2])
+        self.Publisher.pack()
+        self.Publisher_entry.pack()
+        self.Publisher_entry.insert(0, pub_result[0][1])
+        self.PublisherInfo.pack()
+        self.PublisherInfo_entry.pack()
+        self.PublisherInfo_entry.insert(0, pub_result[0][2])
 
-        Publisher = tk.Label(self.new_fields_frame, text='Publisher Name')
-        Publisher.pack()
-        Publisher_entry = tk.Entry(self.new_fields_frame, width=50)
-        Publisher_entry.pack()
-        Publisher_entry.insert(0, pub_result[0][1])
+        self.PublisherDate.pack()
+        self.PublisherDate_entry.pack()
+        self.PublisherDate_entry.insert(0, result[0][4])
 
-        PublisherInfo = tk.Label(self.new_fields_frame, text='Publisher Info')
-        PublisherInfo.pack()
-        PublisherInfo_entry = tk.Entry(self.new_fields_frame, width=50)
-        PublisherInfo_entry.pack()
-        PublisherInfo_entry.insert(0, pub_result[0][2])
-
-        PublisherDate = tk.Label(self.new_fields_frame, text='Publication date (YYYY-MM-DD)')
-        PublisherDate.pack()
-        PublisherDate_entry = tk.Entry(self.new_fields_frame, width=50)
-        PublisherDate_entry.pack()
-        PublisherDate_entry.insert(0, result[0][4])
-
-        isbn = tk.Label(self.new_fields_frame, text='isbn')
-        isbn.pack()
-        isbn_entry = tk.Entry(self.new_fields_frame, width=50)
-        isbn_entry.pack()
-        isbn_entry.insert(0, result[0][5])
+        self.isbn.pack()
+        self.isbn_entry.pack()
+        self.isbn_entry.insert(0, result[0][5])
 
         cur.execute("""SELECT * 
                         FROM copytable
@@ -369,8 +371,8 @@ class UpdateRemove(tk.Frame):
         print(copy_result)
 
         cur.execute("""SELECT id 
-                               FROM liblocation;
-                                           """)
+                    FROM liblocation;
+                """)
         all_location = cur.fetchall()
 
         book_id = copy_result[0][0]
@@ -401,6 +403,19 @@ class UpdateRemove(tk.Frame):
             copies_entry = tk.Entry(self.new_fields_frame, width=50)
             copies_entry.pack()
             copies_entry.insert(0, frequency)
+
+            self.fields[location_entry] = copies_entry
+
+    def get_entries(self):
+        entry_values = {}
+
+        for location_entry, copies_entry in self.fields.items():
+            location = location_entry.get()
+            copies = copies_entry.get()
+
+            entry_values[location] = copies
+
+        return entry_values
 
 
 
